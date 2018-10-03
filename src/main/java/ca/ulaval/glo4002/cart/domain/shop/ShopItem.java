@@ -15,4 +15,6 @@ public abstract class ShopItem {
     public abstract int getWeight();
 
     public abstract boolean isPrime();
+
+    public abstract int calculateTotalPrice();
 }

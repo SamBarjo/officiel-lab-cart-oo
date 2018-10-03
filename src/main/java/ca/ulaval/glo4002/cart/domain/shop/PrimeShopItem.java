@@ -74,4 +74,9 @@ public class PrimeShopItem extends ShopItem {
     public boolean isPrime() {
         return true;
     }
+
+    @Override
+    public int calculateTotalPrice() {
+        return price;
+    }
 }

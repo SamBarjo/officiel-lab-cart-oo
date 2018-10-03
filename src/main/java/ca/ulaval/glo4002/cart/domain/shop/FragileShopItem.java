@@ -1,12 +1,17 @@
 package ca.ulaval.glo4002.cart.domain.shop;
 
-import javax.xml.bind.annotation.XmlElement;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class StandardShopItem extends ShopItem {
+import javax.xml.bind.annotation.XmlElement;
 
-    private static final int PRICE_PER_KG = 2;
+public class FragileShopItem extends ShopItem {
+
+    private static final int SHIPPING_PRICE = 5;
+    private static final int PRICE_PER_KG = 3;
+
+    private FragileShopItem() {
+
+    }
 
     @XmlElement
     @JsonProperty
@@ -33,12 +38,9 @@ public class StandardShopItem extends ShopItem {
     // Ne pas enlever @JsonProperty, ceci sert pour le panneau d'admin où on saisit les items
     private double profitMarginPercentage;
 
-    private StandardShopItem() {
-        // JAXB
-    }
 
-    public StandardShopItem(String itemSku, String name, int price, int weight, double profitMarginPercentage,
-            boolean available) {
+    public FragileShopItem(String itemSku, String name, int price, int weight, double profitMarginPercentage,
+                         boolean available) {
         this.itemSku = itemSku;
         this.name = name;
         this.price = price;
@@ -74,11 +76,11 @@ public class StandardShopItem extends ShopItem {
 
     @Override
     public boolean isPrime() {
-        return false;
+        return true;
     }
 
     @Override
     public int calculateTotalPrice() {
-        return price + PRICE_PER_KG * weight;
+        return price + SHIPPING_PRICE + PRICE_PER_KG * weight;
     }
 }

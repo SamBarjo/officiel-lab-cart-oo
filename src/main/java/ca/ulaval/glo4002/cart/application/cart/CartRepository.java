@@ -17,16 +17,28 @@ public class CartRepository {
 
     private static File storageFile;
 
+    private boolean xmlPersistence;
+    private List<Cart> list;
+
     static {
         storageFile = XmlUtils.createStorageFile(CART_STORAGE);
     }
 
+    public CartRepository(boolean xmlPersistence) {
+        this.xmlPersistence = xmlPersistence;
+    }
+
     public List<Cart> retrieveCarts() {
-        Unmarshaller unmarshaller = XmlUtils.createUnmarshaller();
-        try {
-            return ((CartList) unmarshaller.unmarshal(storageFile)).getCarts();
-        } catch (JAXBException e) {
-            return new ArrayList<>();
+        if (xmlPersistence) {
+            Unmarshaller unmarshaller = XmlUtils.createUnmarshaller();
+            try {
+                return ((CartList) unmarshaller.unmarshal(storageFile)).getCarts();
+            } catch (JAXBException e) {
+                return new ArrayList<>();
+            }
+        }
+        else {
+            return list;
         }
     }
 
