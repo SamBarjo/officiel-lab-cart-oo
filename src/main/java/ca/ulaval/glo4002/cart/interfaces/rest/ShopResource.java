@@ -1,5 +1,6 @@
 package ca.ulaval.glo4002.cart.interfaces.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -14,13 +15,21 @@ public class ShopResource {
 
     private ShopApplicationService shopService;
 
-    public ShopResource(ShopRepository shopRepository) {
-        this.shopService = new ShopApplicationService(shopRepository);
+    public ShopResource() {
+        this.shopService = new ShopApplicationService();
     }
 
     @GET
     @Path("/available-items")
-    public List<ShopItem> listItems() {
-        return shopService.listAvailableItems();
+    public List<ShopItemDto> listItems() {
+        List<ShopItem> items = shopService.listAvailableItems();
+
+        List<ShopItemDto> itemDtos = new ArrayList<>();
+        ShopItemDtoAssembler assembler = new ShopItemDtoAssembler();
+        for (ShopItem item : items) {
+            itemDtos.add(assembler.toDto(item));
+        }
+
+        return itemDtos;
     }
 }

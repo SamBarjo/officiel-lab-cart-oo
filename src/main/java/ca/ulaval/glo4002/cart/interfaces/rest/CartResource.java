@@ -26,14 +26,16 @@ public class CartResource {
 	private CartApplicationService cartService;
 	private ShopApplicationService shopService;
 
-    public CartResource(CartRepository cartRepository, ShopRepository shopRepository) {
-        this.cartService = new CartApplicationService(cartRepository);
-        this.shopService = new ShopApplicationService(shopRepository);
+    public CartResource() {
+        this.cartService = new CartApplicationService();
+        this.shopService = new ShopApplicationService();
     }
 
     @GET
-	public Cart getCart(@PathParam(EMAIL_PARAMETER) String email) {
-		return cartService.findOrCreateCartForClient(email);
+	public CartDto getCart(@PathParam(EMAIL_PARAMETER) String email) {
+		Cart cart = cartService.findOrCreateCartForClient(email);
+		CartDtoAssembler assembler = new CartDtoAssembler();
+		return assembler.toDto(cart);
 	}
 
 	@PUT

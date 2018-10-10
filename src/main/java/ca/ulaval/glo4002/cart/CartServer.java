@@ -1,5 +1,14 @@
 package ca.ulaval.glo4002.cart;
 
+import ca.ulaval.glo4002.cart.application.ServiceLocator;
+import ca.ulaval.glo4002.cart.domain.cart.CartRepository;
+import ca.ulaval.glo4002.cart.domain.shop.ShopRepository;
+import ca.ulaval.glo4002.cart.infrastructure.persistence.memory.InMemoryCartRepository;
+import ca.ulaval.glo4002.cart.infrastructure.persistence.memory.InMemoryShopRepository;
+import ca.ulaval.glo4002.cart.infrastructure.persistence.xml.XmlCartRepository;
+import ca.ulaval.glo4002.cart.infrastructure.persistence.xml.XmlShopRepository;
+import ca.ulaval.glo4002.cart.interfaces.rest.*;
+import ca.ulaval.glo4002.cart.interfaces.rest.filters.ChromeFilter;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -8,10 +17,6 @@ import org.glassfish.jersey.servlet.ServletContainer;
 
 import ca.ulaval.glo4002.cart.application.shop.ItemNotFoundException;
 import ca.ulaval.glo4002.cart.context.ApplicationContext;
-import ca.ulaval.glo4002.cart.interfaces.rest.CartResource;
-import ca.ulaval.glo4002.cart.interfaces.rest.PersistenceProvider;
-import ca.ulaval.glo4002.cart.interfaces.rest.ShopResource;
-import ca.ulaval.glo4002.cart.interfaces.rest.PersistenceExceptionMapper;
 import ca.ulaval.glo4002.cart.interfaces.rest.filters.CORSFilter;
 
 public class CartServer implements Runnable {
@@ -27,7 +32,7 @@ public class CartServer implements Runnable {
     }
 
     private void configureContext() {
-	    new ApplicationContext(PersistenceProvider.getShopRepository()).apply();
+	    new ApplicationContext().apply();
     }
 
     private void startServer() {
@@ -38,7 +43,8 @@ public class CartServer implements Runnable {
         ResourceConfig packageConfig = new ResourceConfig()
                 .registerInstances(createClientResource(), createCartResource())
                 .registerInstances(new PersistenceExceptionMapper(), new ItemNotFoundException())
-                .register(new CORSFilter());
+                .register(new CORSFilter())
+                .register(new ChromeFilter());
 
         ServletContainer container = new ServletContainer(packageConfig);
         ServletHolder servletHolder = new ServletHolder(container);
@@ -56,10 +62,10 @@ public class CartServer implements Runnable {
     }
 
     private CartResource createCartResource() {
-		return new CartResource(PersistenceProvider.getCartRepository(), PersistenceProvider.getShopRepository());
+		return new CartResource();
 	}
 
 	private ShopResource createClientResource() {
-		return new ShopResource(PersistenceProvider.getShopRepository());
+		return new ShopResource();
 	}
 }
